@@ -12,7 +12,6 @@ class CompactClass(compactDir:String) {
 
     val dirSize = FileUtils.sizeOfDirectory(new File(smallFilesPath)).toDouble/1000000
     val repartition_factor = math.ceil(dirSize/expectedSize.toDouble).toInt
-//    System.out.println("#repartition_factor: " + repartition_factor)
 
     val df = spark.read.parquet(smallFilesPath)
     df

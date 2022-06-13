@@ -8,16 +8,18 @@ object Main {
     val conf: SparkConf = new SparkConf().setMaster("local").setAppName("SparkApp")
     val spark: SparkSession = SparkSession.builder().config(conf).getOrCreate()
 
-//    val smallFilesPath: String = args(0)
-    val smallFilesPath: String = "src/main/resources/generated"
+//    Путь к файлам
+    val smallFilesPath: String = args(0)
+//    val smallFilesPath: String = "src/main/resources/generated"
 
     deleteAllFilesFolder(smallFilesPath)
 
     val smallFiles = new SmallFiles(spark)
     smallFiles.generateSmallFiles(smallFilesPath)
 
-//    val expectedSize: String = args(1)
-    val expectedSize: String = "10"
+//    Ожидаемый размер файла
+    val expectedSize: String = args(1)
+//    val expectedSize: String = "10"
 
     val compactDir: String = s"$smallFilesPath/compact"
     val compactClass = new CompactClass(compactDir)
