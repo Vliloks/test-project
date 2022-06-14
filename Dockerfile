@@ -1,22 +1,15 @@
-# syntax=docker/dockerfile:1
+FROM hseeberger/scala-sbt:8u312_1.6.2_2.12.15
 
-ARG OPENJDK_TAG=11.0.13
-FROM openjdk:${OPENJDK_TAG}
+RUN wget https://dlcdn.apache.org/spark/spark-3.1.3/spark-3.1.3-bin-hadoop3.2.tgz && \
+    tar xvf spark-3.1.3-bin-hadoop3.2.tgz && \
+    mv spark-3.1.3-bin-hadoop3.2/ /opt/spark 
 
-ARG SBT_VERSION=1.5.5
+ENV SPARK_HOME=/opt/spark
 
-# prevent this error: java.lang.IllegalStateException: cannot run sbt from root directory without -Dsbt.rootdir=true; see sbt/sbt#1458
-WORKDIR /app
+ENV PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
 
-# Install sbt
-RUN \
-  mkdir /working/ && \
-  cd /working/ && \
-  curl -L -o sbt-$SBT_VERSION.deb https://repo.scala-sbt.org/scalasbt/debian/sbt-$SBT_VERSION.deb && \
-  dpkg -i sbt-$SBT_VERSION.deb && \
-  rm sbt-$SBT_VERSION.deb && \
-  apt-get update && \
-  apt-get install sbt && \
-  cd && \
-  rm -r /working/ && \
-  sbt sbtVersion
+COPY . .
+
+RUN sbt assembly
+
+CMD spark-submit --num-executors 6  --executor-memory 6G --executor-cores 6 --driver-memory 6G  --class Main /root/target/scala-2.12/test-project-assembly-0.1.jar
