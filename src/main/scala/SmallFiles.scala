@@ -25,11 +25,11 @@ class SmallFiles(spark: SparkSession) {
     )
   }
 
-  def generateSmallFiles(smallFilesPath: String): Unit = {
+  def generateSmallFiles(dirName: String): Unit = {
     generateDf(10, 4000000)
       .repartition(30)
       .write
       .mode(SaveMode.Append)
-      .parquet(smallFilesPath)
+      .parquet(dirName)
   }
 }
