@@ -8,14 +8,14 @@ object Main {
     val spark: SparkSession = SparkSession.builder().config(conf).getOrCreate()
 
 //    Путь к файлам
-//    val dirName: String = args(1)
+    val dirName: String = args(1)
     val dirName = "src/main/resources/generated"
 
 //    Ожидаемый размер файла
 //    val reqSize= args(0)
 //    val reqSize = "10"
 
-    val defaultSize = 15
+    val defaultSize = 128
 
     var reqSize = if (args.length == 0) defaultSize else try {
       args(0).toInt

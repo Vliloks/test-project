@@ -11,8 +11,6 @@ class CompactClass() {
 
   def compact(reqSize: Int, dirName: String, spark: SparkSession): Unit ={
 
-//    val dirSize = FileUtils.sizeOfDirectory(new File(dirName)).toDouble/1000000
-//    val repartitionFactor = math.ceil(dirSize/reqSize.toDouble).toInt
 
     val iter = hdfs.listFiles(new Path(dirName), false)
     var dirSize = 0L
