@@ -1,6 +1,7 @@
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+import com.typesafe.config.ConfigFactory
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.sql.types._
@@ -64,14 +65,20 @@ class CompactClass() {
 
     val info_df: DataFrame = spark.createDataFrame(spark.sparkContext.parallelize(info_Seq), info_schema)
 
+    val conf = ConfigFactory.load("application.conf")
+    val url = conf.getString("postgres.url")
+    val dbtable = conf.getString("postgres.dbtable")
+    val user = conf.getString("postgres.user")
+    val password = conf.getString("postgres.password")
+
     info_df.select("data_path", "number_of_files", "average_files_size", "dt").write
           .mode(SaveMode.Append)
           .format("jdbc")
-          .option("url", "jdbc:postgresql://postgres:5432/deco")
+          .option("url", url)
           .option("driver", "org.postgresql.Driver")
-          .option("dbtable", "meta_info_table")
-          .option("user", "deco")
-          .option("password", "deco")
+          .option("dbtable", dbtable)
+          .option("user", user)
+          .option("password", password)
           .save()
 
   }
