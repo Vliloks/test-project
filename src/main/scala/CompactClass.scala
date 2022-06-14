@@ -10,7 +10,7 @@ import org.apache.spark.sql.{DataFrame, Row, SaveMode, SparkSession}
 class CompactClass() {
   val hdfs = FileSystem.get(new Configuration())
 
-  def compact(reqSize: Int, dirName: String, spark: SparkSession): Unit ={
+  def compact(reqSize: Int, dirName: String, spark: SparkSession): Unit={
 
 
     val iter = hdfs.listFiles(new Path(dirName), false)
@@ -32,22 +32,36 @@ class CompactClass() {
       .mode(SaveMode.Append)
       .parquet(pathTmp)
 
-    hdfs.delete(new Path(dirName), true)
-    hdfs.rename(new Path(pathTmp), new Path(dirName))
-  }
-
-  def saveMetaInfoInDB(dirName: String ,spark: SparkSession): Unit ={
-    val iter = hdfs.listFiles(new Path(dirName), false)
+    val iterTmp = hdfs.listFiles(new Path(pathTmp), false)
     var numberOfFiles = 0
     var overallSize = 0L
 
-    while (iter.hasNext) {
-      var f = iter.next()
+    while (iterTmp.hasNext) {
+      var f = iterTmp.next()
       if (f.getLen != 0) {
         numberOfFiles = numberOfFiles + 1
         overallSize = overallSize + f.getLen
       }
     }
+
+    hdfs.delete(new Path(dirName), true)
+    hdfs.rename(new Path(pathTmp), new Path(dirName))
+
+    saveMetaInfoInDB(numberOfFiles, overallSize, dirName, spark)
+  }
+
+  def saveMetaInfoInDB(numberOfFiles: Int, overallSize: Long, dirName: String ,spark: SparkSession): Unit ={
+//    val iter = hdfs.listFiles(new Path(dirName), false)
+//    var numberOfFiles = 0
+//    var overallSize = 0L
+//
+//    while (iter.hasNext) {
+//      var f = iter.next()
+//      if (f.getLen != 0) {
+//        numberOfFiles = numberOfFiles + 1
+//        overallSize = overallSize + f.getLen
+//      }
+//    }
 
     val averageFilesSize = if (numberOfFiles > 0) overallSize.toDouble / numberOfFiles / 1000000 else 0
 

@@ -34,7 +34,7 @@ object Main extends App {
 
   val compactClass = new CompactClass()
   compactClass.compact(reqSize, dirName, spark)
-  compactClass.saveMetaInfoInDB(dirName, spark)
+//  compactClass.saveMetaInfoInDB(dirName, spark)
 
   spark.stop()
 
