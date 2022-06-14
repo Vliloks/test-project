@@ -1,14 +1,20 @@
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
+import com.typesafe.config.{Config, ConfigFactory}
 
 
 object Main {
   def main(args: Array[String]): Unit = {
+
+    val applicationConf: Config = ConfigFactory.load("application.conf")
+    val appname = applicationConf.getString("app.owner")
+    print(appname)
+
     val conf: SparkConf = new SparkConf().setMaster("local[2]").setAppName("SparkApp")
     val spark: SparkSession = SparkSession.builder().config(conf).getOrCreate()
 
 //    Путь к файлам
-    val dirName: String = args(1)
+//    val dirName: String = args(1)
     val dirName = "src/main/resources/generated"
 
 //    Ожидаемый размер файла
